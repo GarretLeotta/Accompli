@@ -8,7 +8,7 @@ export default function TabLayout() {
 
   return (
     <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false, title: "Notes" }} />
+      <Stack.Screen name="index" options={{ headerShown: false, title: "Test" }} />
     </Stack>
   );
 }

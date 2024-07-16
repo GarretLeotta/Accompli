@@ -1,24 +1,38 @@
-import { Link } from 'expo-router';
-import { Text, View, StyleSheet } from "react-native";
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedLink } from '@/components/ThemedLink';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
+import { ThemedText } from '@/components/Themed/ThemedText';
+import { ThemedView } from '@/components/Themed/ThemedView';
+import { ThemedLink } from '@/components/Themed/ThemedLink';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Note } from '@/models/note'
+import { fetchNotes } from '@/services/noteService';
+import { useFetch } from '@/hooks/useFetch';
+import { AsyncContentView } from '@/components/AsyncContentView';
 
 export default function Index() {
+  const { data, loading, error } = useFetch(fetchNotes, []);
+
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText>Notes Go Below Here</ThemedText>
-      <ThemedLink href="/(notes)/details/1">Note 1</ThemedLink>
-      <ThemedLink href="/(notes)/details/2">Note 2</ThemedLink>
-      <ThemedLink href="/(notes)/details/3">Note 3</ThemedLink>
-      <ThemedLink
-        href={{
-          pathname: '/(notes)/details/[id]',
-          params: { id: 'bacon' },
-        }}>
-        Note Bacon
-      </ThemedLink>
-    </ThemedView>
+    <AsyncContentView data={data} loading={loading} error={error}>
+      {(data) => (
+        <SafeAreaView style={styles.container}>
+          <FlatList
+            nestedScrollEnabled
+            data={ data }
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <ThemedLink
+                href={{
+                  pathname: '/(notes)/details/[id]',
+                  params: { id: item.id },
+                }}>
+                {item.title}
+              </ThemedLink>
+            )}
+          />
+        </SafeAreaView>
+      )}
+    </AsyncContentView>
   );
 }
 
